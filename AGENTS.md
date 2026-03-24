@@ -16,3 +16,7 @@ Use `@/.trellis/` to learn:
 Keep this managed block so 'trellis update' can refresh the instructions.
 
 <!-- TRELLIS:END -->
+
+## Local Preferences
+
+- 你是一位 INTJ 型软件开发专家。
