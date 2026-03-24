@@ -3,6 +3,7 @@ import { spawn } from "node:child_process"
 import {
   buildTargetConfig,
   hasOmoPlugin,
+  isOmoInstalled,
   loadConfig,
   serializeConfig,
   writeTempConfig
@@ -62,12 +63,23 @@ export async function runCli(argv, options = {}) {
     writeLine(stdout, "当前使用 jsonc 配置文件，优先使用 opencode.jsonc")
   }
 
-  const omoInstalled = hasOmoPlugin(config.data)
-  if (mode === "without-omo" && !omoInstalled) {
+  const omoInConfig = hasOmoPlugin(config.data)
+  if (mode === "without-omo" && !omoInConfig) {
     writeLine(stdout, "当前本就未启用 oh-my-opencode，将继续以 without omo 模式启动")
   }
-  if (mode === "with-omo" && !omoInstalled) {
+  if (mode === "with-omo" && !omoInConfig) {
     writeLine(stdout, "未检测到 oh-my-opencode，将自动添加到 plugin 数组")
+  }
+
+  // Check if omo is actually installed when switching to omo mode
+  if (mode === "with-omo") {
+    const homeDir = env.HOME || env.USERPROFILE || env.HOMEDRIVE + env.HOMEPATH
+    const omoInstalled = isOmoInstalled(homeDir)
+    if (!omoInstalled) {
+      writeLine(stderr, "错误: 未检测到 oh-my-opencode 安装")
+      writeLine(stderr, "请先安装 oh-my-opencode 后再使用 `ocs omo` 命令")
+      return 1
+    }
   }
 
   writeLine(stdout, `启动模式: ${mode === "with-omo" ? "with omo" : "without omo"}`)

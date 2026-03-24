@@ -121,11 +121,14 @@ test("with-omo 模式会自动补充插件", () => {
 test("ocs omo 在未检测到插件时会自动写入插件并继续启动", async () => {
   const root = makeTempDir()
   const configDir = join(root, ".config", "opencode")
+  const omoConfigDir = join(root, ".config", "opencode")
   const configPath = createConfig(
     configDir,
     "opencode.json",
     JSON.stringify({ plugin: ["other-plugin"] }, null, 2)
   )
+  // Create omo config file to simulate omo installation
+  createConfig(omoConfigDir, "oh-my-opencode.json", JSON.stringify({}))
   const outputPath = join(root, "opencode-args.log")
   const fakeOpencode = createFakeOpencode(root, outputPath, 0)
   const { stdout, stderr } = makeStreams()
@@ -154,11 +157,14 @@ test("ocs omo 在未检测到插件时会自动写入插件并继续启动", asy
 test("ocs omo 在插件已存在时不会重复写入", async () => {
   const root = makeTempDir()
   const configDir = join(root, ".config", "opencode")
+  const omoConfigDir = join(root, ".config", "opencode")
   const configPath = createConfig(
     configDir,
     "opencode.json",
     JSON.stringify({ plugin: ["oh-my-opencode@latest", "other-plugin"] }, null, 2)
   )
+  // Create omo config file to simulate omo installation
+  createConfig(omoConfigDir, "oh-my-opencode.json", JSON.stringify({}))
   const outputPath = join(root, "opencode-args.log")
   const fakeOpencode = createFakeOpencode(root, outputPath, 0)
   const { stdout, stderr } = makeStreams()
@@ -259,4 +265,23 @@ test("启动失败时保留已写入的新配置", async () => {
 `)
   assert.match(stderr.chunks.join(""), /启动 opencode 失败/)
   assert.equal(existsSync(configPath), true)
+})
+
+test("ocs omo 在未安装 oh-my-opencode 时报错退出", async () => {
+  const root = makeTempDir()
+  const configDir = join(root, ".config", "opencode")
+  const original = JSON.stringify({ plugin: ["other-plugin"] }, null, 2)
+  const configPath = createConfig(configDir, "opencode.json", original)
+  const { stdout, stderr } = makeStreams()
+
+  const exitCode = await runCli(["omo"], {
+    env: createEnv(configDir),
+    stdout,
+    stderr
+  })
+
+  assert.equal(exitCode, 1)
+  assert.equal(readFileSync(configPath, "utf-8"), original)
+  assert.match(stderr.chunks.join(""), /错误: 未检测到 oh-my-opencode 安装/)
+  assert.match(stderr.chunks.join(""), /请先安装 oh-my-opencode 后再使用 `ocs omo` 命令/)
 })

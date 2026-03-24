@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
+import { homedir } from "node:os"
 
 const OMO_PLUGIN_PATTERN = /^oh-my-opencode(?:@.+)?$/i
 const OMO_PLUGIN_ENTRY = "oh-my-opencode@latest"
@@ -100,6 +101,22 @@ function stripJsonCommentsAndTrailingCommas(text) {
 
 export function isOmoPlugin(value) {
   return typeof value === "string" && OMO_PLUGIN_PATTERN.test(value.trim())
+}
+
+/**
+ * Check if oh-my-opencode is installed on the system.
+ * Detection: check for oh-my-opencode.jsonc or oh-my-opencode.json
+ * in ~/.config/opencode/ directory
+ * @param {string} [homeDir] - Optional home directory override (for testing)
+ * @returns {boolean}
+ */
+export function isOmoInstalled(homeDir = null) {
+  const home = homeDir || homedir()
+  const omoConfigDir = join(home, ".config", "opencode")
+  const jsoncPath = join(omoConfigDir, "oh-my-opencode.jsonc")
+  const jsonPath = join(omoConfigDir, "oh-my-opencode.json")
+
+  return existsSync(jsoncPath) || existsSync(jsonPath)
 }
 
 export function getPluginList(config) {
