@@ -1,0 +1,32 @@
+{
+  "name": "opencode-switch",
+  "version": "0.1.0",
+  "description": "CLI for switching oh-my-opencode in opencode config and launching opencode.",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ocs": "./bin/ocs.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "opencode",
+    "cli",
+    "oh-my-opencode",
+    "plugin",
+    "switch"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test test/*.mjs"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  }
+}
