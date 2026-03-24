@@ -2,9 +2,10 @@
 
 `opencode-switch` 是一个给 `opencode` 用的插件切换工具，提供一个简单命令：`ocs`。
 
-GitHub 仓库：
+仓库：
 
-- [https://github.com/yizhitangtongxue/opencode-switch.git](https://github.com/yizhitangtongxue/opencode-switch.git)
+- [npm](https://www.npmjs.com/package/opencode-switch)
+- [github](https://github.com/yizhitangtongxue/opencode-switch)
 
 它的核心用途，是帮你在“带 `oh-my-opencode` 插件”和“不带这个插件”两种运行状态之间快速切换，而不需要每次手动编辑 `~/.config/opencode/opencode.json` 或 `opencode.jsonc`。
 
