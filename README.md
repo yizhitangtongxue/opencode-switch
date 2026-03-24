@@ -4,6 +4,11 @@
 
 它的核心用途，是帮你在“带 `oh-my-opencode` 插件”和“不带这个插件”两种运行状态之间快速切换，而不需要每次手动编辑 `~/.config/opencode/opencode.json` 或 `opencode.jsonc`。
 
+默认配置目录：
+
+- macOS / Linux：`~/.config/opencode`
+- Windows：`C:\Users\用户名\.config\opencode`
+
 适合的使用场景：
 
 - 你想临时切回普通 `opencode`，不带 `oh-my-opencode`
@@ -34,6 +39,11 @@
 
 1. `~/.config/opencode/opencode.jsonc`
 2. `~/.config/opencode/opencode.json`
+
+在 Windows 下，对应的目录会变成：
+
+1. `C:\Users\用户名\.config\opencode\opencode.jsonc`
+2. `C:\Users\用户名\.config\opencode\opencode.json`
 
 行为规则：
 

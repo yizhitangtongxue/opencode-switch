@@ -106,8 +106,24 @@ export function getPluginList(config) {
   return Array.isArray(config?.plugin) ? config.plugin : []
 }
 
+function getHomeDir(env) {
+  if (env.HOME) {
+    return env.HOME
+  }
+
+  if (env.USERPROFILE) {
+    return env.USERPROFILE
+  }
+
+  if (env.HOMEDRIVE && env.HOMEPATH) {
+    return `${env.HOMEDRIVE}${env.HOMEPATH}`
+  }
+
+  return ""
+}
+
 function getConfigDir(env) {
-  return env.OCS_CONFIG_DIR || join(env.HOME || "", ".config", "opencode")
+  return env.OCS_CONFIG_DIR || join(getHomeDir(env), ".config", "opencode")
 }
 
 function getEol(text) {

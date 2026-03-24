@@ -72,6 +72,27 @@ test("优先读取 opencode.jsonc", async () => {
   assert.equal(hasOmoPlugin(config.data), true)
 })
 
+test("在没有 HOME 时会回退到 USERPROFILE 下的配置目录", async () => {
+  const root = makeTempDir()
+  const userProfile = join(root, "user-home")
+  const configDir = join(userProfile, ".config", "opencode")
+  const configPath = createConfig(
+    configDir,
+    "opencode.json",
+    JSON.stringify({ plugin: ["oh-my-opencode@latest"] }, null, 2)
+  )
+
+  const config = await loadConfig({
+    ...process.env,
+    HOME: "",
+    USERPROFILE: userProfile
+  })
+
+  assert.equal(config.path, configPath)
+  assert.equal(config.format, "json")
+  assert.equal(hasOmoPlugin(config.data), true)
+})
+
 test("严格识别 oh-my-opencode 插件名", () => {
   assert.equal(isOmoPlugin("oh-my-opencode"), true)
   assert.equal(isOmoPlugin("oh-my-opencode@latest"), true)

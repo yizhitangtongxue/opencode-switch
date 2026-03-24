@@ -101,7 +101,9 @@ export async function runCli(argv, options = {}) {
   try {
     child = spawn(getOpencodeBin(env), [], {
       stdio: "inherit",
-      env
+      env,
+      shell: process.platform === "win32",
+      windowsHide: true
     })
   } catch (error) {
     writeLine(stderr, `启动 opencode 失败: ${error.message}`)
