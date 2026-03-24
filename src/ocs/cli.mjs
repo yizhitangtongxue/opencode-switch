@@ -14,23 +14,16 @@ function writeLine(stream, message) {
 }
 
 function parseCliArgs(argv) {
-  if (argv.length === 0) {
-    return {
-      mode: "without-omo",
-      error: null
-    }
-  }
-
-  if (argv.length === 1 && argv[0] === "omo") {
+  if (argv[0] === "omo") {
     return {
       mode: "with-omo",
-      error: null
+      opencodeArgs: argv.slice(1)
     }
   }
 
   return {
-    mode: null,
-    error: "仅支持 `ocs` 或 `ocs omo`，不再支持额外参数"
+    mode: "without-omo",
+    opencodeArgs: argv
   }
 }
 
@@ -43,12 +36,7 @@ export async function runCli(argv, options = {}) {
   const stdout = options.stdout || process.stdout
   const stderr = options.stderr || process.stderr
 
-  const { mode, error } = parseCliArgs(argv)
-
-  if (error) {
-    writeLine(stderr, error)
-    return 1
-  }
+  const { mode, opencodeArgs } = parseCliArgs(argv)
 
   let config
   try {
@@ -111,7 +99,7 @@ export async function runCli(argv, options = {}) {
   }
 
   try {
-    child = spawn(getOpencodeBin(env), [], {
+    child = spawn(getOpencodeBin(env), opencodeArgs, {
       stdio: "inherit",
       env,
       shell: process.platform === "win32",

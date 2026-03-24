@@ -187,7 +187,7 @@ test("ocs omo 在插件已存在时不会重复写入", async () => {
   assert.equal(stderr.chunks.join(""), "")
 })
 
-test("ocs 会在无参数模式下保留新的 jsonc 配置", async () => {
+test("ocs 会透传参数并保留新的 jsonc 配置", async () => {
   const root = makeTempDir()
   const configDir = join(root, ".config", "opencode")
   const configPath = createConfig(
@@ -203,7 +203,7 @@ test("ocs 会在无参数模式下保留新的 jsonc 配置", async () => {
   const fakeOpencode = createFakeOpencode(root, outputPath, 0)
   const { stdout, stderr } = makeStreams()
 
-  const exitCode = await runCli([], {
+  const exitCode = await runCli(["--model", "gpt-5"], {
     env: createEnv(configDir, { OPENCODE_BIN: fakeOpencode }),
     stdout,
     stderr
@@ -216,33 +216,37 @@ test("ocs 会在无参数模式下保留新的 jsonc 配置", async () => {
   ]
 }
 `)
-  assert.equal(readFileSync(outputPath, "utf-8").trim(), "")
+  assert.equal(readFileSync(outputPath, "utf-8").trim(), "--model gpt-5")
   assert.match(stdout.chunks.join(""), /当前使用 jsonc 配置文件/)
   assert.match(stdout.chunks.join(""), /启动模式: without omo/)
   assert.match(stdout.chunks.join(""), /配置已更新并保留当前状态/)
   assert.equal(stderr.chunks.join(""), "")
 })
 
-test("出现额外参数时会直接报错退出", async () => {
+test("ocs omo 会透传参数", async () => {
   const root = makeTempDir()
   const configDir = join(root, ".config", "opencode")
-  const configPath = createConfig(
+  const omoConfigDir = join(root, ".config", "opencode")
+  createConfig(
     configDir,
     "opencode.json",
     JSON.stringify({ plugin: ["oh-my-opencode@latest"] }, null, 2)
   )
+  createConfig(omoConfigDir, "oh-my-opencode.json", JSON.stringify({}))
+  const outputPath = join(root, "opencode-args.log")
+  const fakeOpencode = createFakeOpencode(root, outputPath, 0)
   const { stdout, stderr } = makeStreams()
 
-  const exitCode = await runCli(["--model", "gpt-5"], {
-    env: createEnv(configDir),
+  const exitCode = await runCli(["omo", "--model", "gpt-5"], {
+    env: createEnv(configDir, { OPENCODE_BIN: fakeOpencode }),
     stdout,
     stderr
   })
 
-  assert.equal(exitCode, 1)
-  assert.equal(readFileSync(configPath, "utf-8"), JSON.stringify({ plugin: ["oh-my-opencode@latest"] }, null, 2))
-  assert.equal(stdout.chunks.join(""), "")
-  assert.match(stderr.chunks.join(""), /仅支持 `ocs` 或 `ocs omo`，不再支持额外参数/)
+  assert.equal(exitCode, 0)
+  assert.equal(readFileSync(outputPath, "utf-8").trim(), "--model gpt-5")
+  assert.match(stdout.chunks.join(""), /启动模式: with omo/)
+  assert.equal(stderr.chunks.join(""), "")
 })
 
 test("启动失败时保留已写入的新配置", async () => {
