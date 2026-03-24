@@ -35,7 +35,31 @@
 
 ## 安装
 
-### 方式 1：本地开发安装
+### 方式 1：从 npm 全局安装
+
+安装：
+
+```bash
+npm install -g opencode-switch
+```
+
+然后直接运行：
+
+```bash
+ocs
+ocs omo
+```
+
+### 方式 2：直接用 Node 执行
+
+不做全局安装时，也可以直接运行入口文件：
+
+```bash
+node bin/ocs.mjs
+node bin/ocs.mjs omo
+```
+
+### 方式 3：本地开发安装
 
 先安装依赖：
 
@@ -56,30 +80,6 @@ ocs --help
 ocs
 ocs omo
 ocs --model gpt-5
-```
-
-### 方式 2：直接用 Node 执行
-
-不做全局安装时，也可以直接运行入口文件：
-
-```bash
-node bin/ocs.mjs
-node bin/ocs.mjs omo
-```
-
-### 方式 3：从 npm 全局安装
-
-发布到 npm 后，用户可以这样安装：
-
-```bash
-npm install -g opencode-switch
-```
-
-然后直接运行：
-
-```bash
-ocs
-ocs omo
 ```
 
 ## 使用示例
@@ -125,116 +125,3 @@ npm test
 - 参数透传给 `opencode`
 - 写入后的配置会保留
 - 启动失败时不会回滚已写入配置
-
-## 发布到 npm
-
-当前仓库里的 `package.json` 还是：
-
-```json
-{
-  "private": true
-}
-```
-
-这意味着现在不能直接发布。发布前需要先做下面几步。
-
-### 1. 修改 `package.json`
-
-至少确认这些字段：
-
-```json
-{
-  "name": "opencode-switch",
-  "version": "0.1.0",
-  "private": false,
-  "type": "module",
-  "bin": {
-    "ocs": "./bin/ocs.mjs"
-  }
-}
-```
-
-建议同时补充：
-
-- `description`
-- `license`
-- `repository`
-- `homepage`
-- `bugs`
-- `files`
-- `keywords`
-
-如果 `opencode-switch` 这个包名已被占用，需要换成一个未被占用的新名字。
-
-### 2. 登录 npm
-
-```bash
-npm login
-```
-
-### 3. 发布前自检
-
-先确认测试通过：
-
-```bash
-npm test
-```
-
-再确认实际会发布哪些文件：
-
-```bash
-npm pack --dry-run
-```
-
-### 4. 首次发布
-
-公开包通常这样发：
-
-```bash
-npm publish --access public
-```
-
-如果是作用域包，比如 `@your-scope/opencode-switch`，也通常使用：
-
-```bash
-npm publish --access public
-```
-
-### 5. 后续发版
-
-每次发布前先升级版本号：
-
-```bash
-npm version patch
-```
-
-或者：
-
-```bash
-npm version minor
-npm version major
-```
-
-然后重新发布：
-
-```bash
-npm publish
-```
-
-## 发布建议
-
-为了让 npm 包更干净，建议在发布前补一个 `files` 白名单，例如：
-
-```json
-{
-  "files": [
-    "bin",
-    "src",
-    "README.md"
-  ]
-}
-```
-
-这样可以避免把测试文件或其他无关文件一起发出去。
-
-如果你希望，我下一步可以继续帮你把 `package.json` 也整理成“可直接发布到 npm”的状态。
