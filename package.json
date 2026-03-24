@@ -1,6 +1,6 @@
 {
   "name": "opencode-switch",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CLI for switching oh-my-opencode in opencode config and launching opencode.",
   "private": false,
   "license": "MIT",
